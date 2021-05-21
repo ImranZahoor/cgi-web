@@ -7,16 +7,16 @@ def main():
     form = cgi.FieldStorage()
     file_name = form.getfirst("file_name", "")
     # print(file_name)
-    contents = processInput(file_name)    
-    print("Content-Type: text/html\r\n\n"+ contents)
+    contents = processInput(file_name)
+    print(contents)
 
 
-def processInput(thefile):    
-    con = cx_Oracle.connect('i73190','abc*2020','172.31.0.11/STYLEDB')
+def processInput(thefile):
+    con = cx_Oracle.connect('i73190', 'abc*2020', '172.31.0.11/STYLEDB')
     cur = con.cursor()
     cur.execute('drop table beegenes')
     cur.execute('''create table beegenes(
-                gi varchar2(10),
+                gi varchar2(50),
                 sequence clob,
                 freq_A number,
                 freq_C number,
@@ -25,7 +25,7 @@ def processInput(thefile):
                 freq_GC number
                 )''')
     cur.bindarraysize = 50
-    cur.setinputsizes(10, 9000, float, float, float, float, float)
+    cur.setinputsizes(50, 9000, float, float, float, float, float)
     # read raw data from a file
     infile = open(thefile, "r")
     mystr = ""
@@ -68,10 +68,10 @@ def processInput(thefile):
         cur.execute('''insert into beegenes (gi,sequence,freq_A,freq_C,freq_G,freq_T,freq_GC) values(
                     :v1,:v2,:v3,:v4,:v5,:v6,:v7)''', (gi, seq, freq_A, freq_C, freq_G, freq_T, freq_GC))
         con.commit()
-        cur.close()
-        con.close()
+    cur.close()
+    con.close()
 
-        return makePage('done_submission_template.html', ("Thank you for uploading"))
+    return makePage('upload_done_template.html', ("Thank you for uploading"))
 
 
 def fileToStr(fileName):
@@ -80,10 +80,15 @@ def fileToStr(fileName):
     fin.close()
     return contents
 
+
 def makePage(template, subst):
     pageTemplate = fileToStr(template)
     return pageTemplate % subst
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        print("Content-type: text/html\n\n")
+        main()
+    except:
+        cgi.print_exception()
