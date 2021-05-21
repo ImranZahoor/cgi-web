@@ -9,8 +9,9 @@
 </head>
 
 <body>
-    <form enctype="multipart/form-data" method="get" action="datainput.cgi">
-        <input type="file" name="gene" id="gene-file"><br>
+    <form enctype="multipart/form-data" method="POST" action="/cgi-bin/main.cgi">
+        <label for="file-name">Enter a file name with full path</label>
+        <input size="80" name="file_name" id="file-name"><br>
         <input value="submit" type="submit">
     </form>
 </body>
